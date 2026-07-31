@@ -1,0 +1,12 @@
+{
+  "save_dir": "C:\\Users\\31775\\Pictures\\PhotoScraper",
+  "interval_h": 5,
+  "cnu_enabled": true,
+  "500px_enabled": true,
+  "dili_enabled": true,
+  "cnu_pages": 2,
+  "500px_pages": 2,
+  "max_gb": 5,
+  "thumb_size": 220,
+  "last_update": "2026-07-31T11:26:39.743095"
+}

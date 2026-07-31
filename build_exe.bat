@@ -1,74 +1,66 @@
 @echo off
 chcp 65001 >nul
-echo =============================================
-echo   摄影采集 - 图片采集工具 一键打包脚本
-echo =============================================
+title 摄影采集 — 一键打包
+echo.
+echo  ╔══════════════════════════════════════╗
+echo  ║    ?? 摄影采集 — 一键打包工具      ║
+echo  ╚══════════════════════════════════════╝
 echo.
 
-REM 检查 Python
+:: 检查 Python
 python --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [错误] 未检测到 Python，请先安装 Python 3.8+
-    echo 下载地址: https://www.python.org/downloads/
-    pause
-    exit /b 1
+    echo [?] 未检测到 Python
+    echo     请先安装 Python 3.8+: https://www.python.org/downloads/
+    pause & exit /b 1
 )
 
-echo [1/4] 安装依赖包...
-pip install -r requirements.txt --break-system-packages >nul 2>&1
+echo [1/4] 安装依赖...
+pip install -r requirements.txt -q 2>nul
 if %errorlevel% neq 0 (
     pip install -r requirements.txt
 )
 
-echo [2/4] 安装 PyInstaller...
-pip install pyinstaller --break-system-packages >nul 2>&1
-if %errorlevel% neq 0 (
-    pip install pyinstaller
-)
+echo [2/4] 清理旧构建...
+rmdir /s /q build dist 2>nul
+del /q "摄影采集.spec" 2>nul
 
-echo [3/4] 正在打包为 exe (可能需要几分钟)...
+echo [3/4] 打包为 EXE (约 2-5 分钟，请稍候)...
 pyinstaller --onefile --windowed ^
-    --name "摄影采集" ^
-    --add-data "scrapers.py;." ^
+    --name "PhotoScraper" ^
+    --add-data "photo_scraper.py;." ^
     --hidden-import "PIL._tkinter_finder" ^
     --hidden-import "bs4" ^
     --hidden-import "requests" ^
     --hidden-import "json" ^
     --hidden-import "hashlib" ^
     --hidden-import "threading" ^
-    --hidden-import "os" ^
     --hidden-import "re" ^
     --hidden-import "time" ^
     --hidden-import "datetime" ^
     --hidden-import "webbrowser" ^
+    --hidden-import "os" ^
     --clean ^
     --noconsole ^
     main.py
 
 if %errorlevel% neq 0 (
     echo.
-    echo [错误] 打包失败! 请检查上方错误信息。
-    pause
-    exit /b 1
+    echo [?] 打包失败
+    pause & exit /b 1
 )
 
-echo.
 echo [4/4] 清理临时文件...
 rmdir /s /q build 2>nul
-del /q "摄影采集.spec" 2>nul
+del /q "PhotoScraper.spec" 2>nul
 
 echo.
-echo =============================================
-echo   打包完成!
-echo   程序位置: dist\摄影采集.exe
-echo   直接双击运行即可!
-echo =============================================
+echo  ╔══════════════════════════════════════╗
+echo  ║     ? 打包完成!                    ║
+echo  ║     程序: dist\PhotoScraper.exe      ║
+echo  ╚══════════════════════════════════════╝
 echo.
-
-REM 复制配置文件到 dist 目录
-copy requirements.txt dist\README.txt >nul 2>&1
-
-echo [提示] 首次运行会自动在系统图片文件夹下创建"摄影采集"目录。
+echo  直接双击运行即可，首次打开会自动在
+echo  "图片\PhotoScraper" 目录下创建文件夹。
 echo.
-
 pause
